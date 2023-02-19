@@ -4,9 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 const NotFound = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    navigate('/');
-  }, []);
+   useEffect(() => {
+     navigate('/');
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
 
   return (
     <p>
