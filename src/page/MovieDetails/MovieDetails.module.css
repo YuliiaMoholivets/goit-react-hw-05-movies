@@ -1,0 +1,40 @@
+.section {
+  display: flex;
+}
+
+.image {
+  margin: 0 20px 20px 0;
+  width: 200px;
+  margin-top: 10px;
+}
+
+.main_title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.title {
+  font-size: 20px;
+}
+
+.line {
+  font-size: 15px;
+  font-weight: normal;
+}
+
+.link_list {
+  padding: 5px 0 5px 0;
+  background-color: rgb(237, 227, 227);
+  border-bottom: 2px solid gray;
+  border-top: 2px solid gray;
+  margin-bottom: 20px;
+}
+
+.item {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+.item:hover {
+  text-decoration-color: blue;
+}
