@@ -9,7 +9,6 @@ const Reviews = () => {
 
   useEffect(() => {
     SearchMovie('reviews', paramsId, setMovieReviews);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

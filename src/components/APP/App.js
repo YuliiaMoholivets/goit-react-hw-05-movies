@@ -1,7 +1,6 @@
 import Layout from 'components/Layout/Layout';
 import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
-// import Home from "page/Home";
 
 const Home = lazy(() => import('../../page/Home'));
 const Movies = lazy(() => import('../../page/Movies/Movies'));
