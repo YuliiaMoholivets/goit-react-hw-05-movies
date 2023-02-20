@@ -1,40 +1,50 @@
 import MovieList from 'components/MovieList/MovieList';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
-import styles from './Movies.module.css';
+import { useEffect, useState } from 'react';
+import { Form } from 'components/Form/Form';
+import { searchingFilms } from 'servises/API';
+import { useSearchParams } from 'react-router-dom';
 
 const Movies = () => {
-  const [searchName, setSearchName] = useState('');
+  const [searchMovies, setSearchMovies] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const firstValue = searchParams.get('firstValue');
 
-  const handleSubmitSearchMovie = evt => {
-    evt.preventDefault();
-    const firstValue = evt.currentTarget.elements.name.value;
-    if (firstValue.trim() === '') {
-      evt.currentTarget.reset();
-      return;
+  useEffect(() => {
+    if (!firstValue) return;
+    const getSearchingMovies = async () => {
+      try {
+        setIsLoading(true);
+        const searchMovies = await searchingFilms(firstValue);
+
+        if (!searchMovies.length) {
+          setError('There are no movies for your request');
+          return;
+        }
+        setSearchMovies(searchMovies);
+        setError(null);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getSearchingMovies();
+  }, [firstValue]);
+
+  useEffect(() => {
+    if (error) {
+       alert(error);
     }
-    setSearchName(firstValue.trim());
-    evt.currentTarget.reset();
-  };
+  }, [error]);
+  
 
   return (
     <>
-      <div>
-        <form className={styles.SearchForm} onSubmit={handleSubmitSearchMovie}>
-          <input
-            className={styles.input}
-            name="name"
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search film"
-          />
-          <button type="submit" className={styles.Button}>
-            <span className={styles.label}>Search</span>
-          </button>
-        </form>
-      </div>
-      <MovieList searchName={searchName} />
+      <Form />
+      {searchMovies.length >0 && !isLoading && <MovieList searchMovies={searchMovies} /> }
     </>
   );
 };
@@ -44,3 +54,4 @@ export default Movies;
 Movies.propTypes = {
   searchName: PropTypes.string,
 };
+

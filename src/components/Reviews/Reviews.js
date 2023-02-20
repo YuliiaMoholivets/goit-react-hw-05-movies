@@ -1,33 +1,56 @@
-import { SearchMovie } from 'components/API/API';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { getReviewsById } from 'servises/API';
 
 const Reviews = () => {
   const params = useParams();
   const paramsId = Number(params.moviesId);
-  const [movieReviews, setMovieReviews] = useState();
+  const [movieReviews, setMovieReviews] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
 
   useEffect(() => {
-    SearchMovie('reviews', paramsId, setMovieReviews);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!paramsId) return;
+    const getMovieReviews = async paramsId => {
+      try {
+        setIsLoading(true);
+        const reviews = await getReviewsById(paramsId);
+
+        setMovieReviews(reviews);
+        setError(null);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getMovieReviews(paramsId);
+  }, [paramsId]);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+    }
+  }, [error]);
 
   return (
     <section>
-      {movieReviews && (
+      {movieReviews.length >0  && !isLoading&& (
         <ul>
-          {movieReviews.results.length > 0 ? (
-            movieReviews.results.map(result => (
-              <li key={result.id}>
-                <p>{result.author}</p>
-                <p>{result.content}</p>
+            {movieReviews.map(({ id,
+              author,
+              content, }) => (
+              <li key={id}>
+                <p>{author}</p>
+                <p>{content}</p>
               </li>
-            ))
-          ) : (
-            <li> We don't have any reviews for this movie</li>
-          )}
-        </ul>
+            ))} 
+          </ul>
       )}
+      {movieReviews.length===0 && !isLoading && (<p> We don't have any reviews for this movie</p>)}           
     </section>
   );
 };

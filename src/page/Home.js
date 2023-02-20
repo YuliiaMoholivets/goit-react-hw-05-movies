@@ -1,45 +1,42 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { trendingFilms } from 'servises/API';
+import { MovieTrendList } from 'components/MovieTrendList/MovieTrendList';
 
 const Home = () => {
   const [movieList, setMovieList] = useState([]);
-  const API_KEY = '817d33fa7e0ddfc368fbd7439a742f76';
-  const originURL = 'https://api.themoviedb.org/3/';
-
-  const trendMovie = () => {
-    fetch(`${originURL}trending/movie/week?api_key=${API_KEY}&language=en-US`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject(new Error('Enter another name'));
-      })
-      .then(({ results }) => setMovieList(results))
-      .catch(error => console.log(error));
-  };
-
-  const nameMovie = movie => {
-    if (movie.title) {
-      return movie.title;
-    } else return movie.name;
-  };
-
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  
   useEffect(() => {
+    const trendMovie = async () => {
+      try {
+        setIsLoading(true)
+        const films = await trendingFilms();
+        console.log(films)
+        setMovieList(films);
+        setError(null)
+      } catch (error) {
+        setError(error.message)
+      } finally {
+        setIsLoading(false)
+      }
+    };
+
     trendMovie();
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+    }
+  }, [error]);
 
   return (
     <>
       <h2>Trending movies</h2>
-      <ul>
-        {movieList.map(movie => (
-          <li key={movie.id}>
-            <Link to={`movies/${movie.id}`} state={{ from: '/home' }}>
-              {nameMovie(movie)}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {movieList && !isLoading &&(<MovieTrendList movieList={ movieList} />)}
+      
     </>
   );
 };

@@ -1,38 +1,54 @@
-import { SearchMovie } from 'components/API/API';
+import { getCreditsById } from 'servises/API';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Image from '../Image/img.png';
 import styles from './Cast.module.css';
 
 const Cast = () => {
   const params = useParams();
   const paramsId = Number(params.moviesId);
-  const [movieCreditDetail, setMovieCreditDetail] = useState();
-  const baseImgUrl = 'https://image.tmdb.org/t/p/w500/';
+  const [movieCreditDetail, setMovieCreditDetail] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
+
+   useEffect(() => {
+    if (!paramsId) return;
+    const getMovieCredits = async paramsId => {
+      try {
+        setIsLoading(true);
+        const credits = await getCreditsById(paramsId);
+   
+        setMovieCreditDetail(credits);
+        setError('');
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getMovieCredits(paramsId);
+   }, [paramsId]);
+  
   useEffect(() => {
-    SearchMovie('credits', paramsId, setMovieCreditDetail);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (error) {
+      alert(error);
+    }
+  }, [error]);
 
   return (
     <section>
-      {movieCreditDetail && (
+      {movieCreditDetail.length >0 && !isLoading &&(
         <ul className={styles.list}>
-          {movieCreditDetail.cast.map(hero => (
-            <li className={styles.item} key={hero.id}>
-              {hero.profile_path ? (
-                <img
+          {movieCreditDetail.map(({id,
+            name,
+            profile_path}) => (
+            <li className={styles.item} key={id}>
+              <img
                   className={styles.image}
-                  src={`${baseImgUrl}${hero.profile_path}`}
-                  alt={hero.original_name}
+                  src={profile_path}
+                  alt={name}
                 />
-              ) : (
-                <img className={styles.image} src={Image} alt="No foto" />
-              )}
-
-              <p>{hero.original_name}</p>
-              <p>Character: {hero.character}</p>
+              <p>{name}</p>
             </li>
           ))}
         </ul>
