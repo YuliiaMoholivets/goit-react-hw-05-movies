@@ -1,5 +1,5 @@
 import MovieList from 'components/MovieList/MovieList';
-import PropTypes from 'prop-types';
+
 import { useEffect, useState } from 'react';
 import { Form } from 'components/Form/Form';
 import { searchingFilms } from 'servises/API';
@@ -51,7 +51,4 @@ const Movies = () => {
 
 export default Movies;
 
-Movies.propTypes = {
-  searchName: PropTypes.string,
-};
 

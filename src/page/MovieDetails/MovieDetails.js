@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import styles from './MovieDetails.module.css';
@@ -7,7 +7,7 @@ import { getFilmsById } from 'servises/API';
 
 const MovieDetails = () => {
   const params = useParams();
-  const paramsId = Number(params.moviesId);
+  const paramsId = params.moviesId;
 
   const location = useLocation();
   const [movieDetail, setMovieDetail] = useState();
@@ -38,22 +38,22 @@ const MovieDetails = () => {
     }
   }, [error]);
 
-
+  const backLinkHref = location.state?.from;
   return (
     <section>
-      <Link className={styles.btn} to={location.state?.from}>
+      <Link className={styles.btn} to={backLinkHref}>
         &#10229; Go back
       </Link>
       {movieDetail && !isLoading && <DetailsFilm movieDetail={ movieDetail} />      
       }
       <ul className={styles.link_list}>
         <li className={styles.item}>
-          <Link to="cast" state={{ from: location.state?.from }}>
+          <Link to="cast" state={{ from: backLinkHref }}>
             Cast
           </Link>
         </li>
         <li className={styles.item}>
-          <Link to="reviews" state={{ from: location.state?.from }}>
+          <Link to="reviews" state={{ from: backLinkHref}}>
             Reviews
           </Link>
         </li>
@@ -65,7 +65,3 @@ const MovieDetails = () => {
 };
 
 export default MovieDetails;
-
-MovieDetails.propTypes = {
-  state: PropTypes.object,
-};
